@@ -30,20 +30,26 @@ class GMM2():
             no_data = self.data.shape[0]
 
             for data_ii in range(no_data):
+                # The probability of the data point belongs to the 1st cluster
                 pro1 = multivariate_normal.pdf(self.data[data_ii],
                                                mean=prior_mean1,
                                                cov =prior_var1)
+
+                # The probability of the data point belongs to the 2nd cluster
                 pro2 = multivariate_normal.pdf(self.data[data_ii],
                                                mean=prior_mean2,
                                                cov =prior_var2)
                 if pro1 > pro2:
+                    # collect the data belonging to the 1st cluster
                     data1 = np.vstack((data1, self.data[data_ii]))
                 else:
+                    # collect the data belonging to the 2nd cluster
                     data2 = np.vstack((data2, self.data[data_ii]))
 
+            # calculate the new mean for the clusters
             update_mean1 = np.mean(data1, axis = 0)
             update_mean2 = np.mean(data2, axis = 0)
-
+            # the new cov for the clusters
             update_cov1 = np.cov(data1[:,0], data1[:,1])
             update_cov2 = np.cov(data2[:,0], data2[:,1])
 
@@ -56,9 +62,6 @@ class GMM2():
 
 
 
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
     # generate the data
@@ -70,12 +73,6 @@ if __name__ == '__main__':
     true_cov2 = [[10, 6], [6, 12]]
     x2, y2 = np.random.multivariate_normal(true_mean2, true_cov2, 5000).T
 
-    #
-    # plt.plot(x1, y1, 'x', color = "red")
-    # plt.plot(x2, y2, 'x', color="blue")
-    # plt.axis('equal')
-    # plt.show()
-
 
     data_x = np.concatenate((x1, x2))
     data_y = np.concatenate((y1, y2))
@@ -84,6 +81,7 @@ if __name__ == '__main__':
     data1 = np.stack((x1, y1), axis = 1)
     data2 = np.stack((x2, y2), axis=1)
 
+    # the first guess of the mean and cov for the 2 clusters
     prior_mean = np.zeros(4)
     prior_cov = np.zeros(8)
     prior_mean[:] = [20, 15, 22, 30]
@@ -106,7 +104,7 @@ if __name__ == '__main__':
     out2_cov = np.zeros((2, 2))
     np.fill_diagonal(out2_cov, output_var[last_row-1, 2:4])
 
-    # Plot statically
+    # The static plot
     x, y = np.mgrid[5:30:.01, 5:30:.01]
     pos = np.dstack((x, y))
     rv1 = multivariate_normal(out1_mean, out1_cov)
